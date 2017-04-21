@@ -30,13 +30,18 @@ from sklearn.metrics import average_precision_score
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import label_binarize
 from sklearn.multiclass import OneVsRestClassifier
+from sklearn.metrics import mean_squared_error
+from math import sqrt
 
+#call matlab to generate predictions
+print('Call successfully done')
 
 dfpred = pd.read_table('C:/Users/Sudipta/Documents/DL/kronRLSMKStack/predictions_all.txt',header=None, sep=',')
 dfpred_test = pd.read_table('C:/Users/Sudipta/Documents/DL/kronRLSMKStack/predictions_test_all.txt',header=None, sep=',')
 dftrain = pd.read_csv('C:/Users/Sudipta/Documents/DL/kronRLSMKStack/label_train_all.txt',header=None,sep=',')
 dftest = pd.read_csv('C:/Users/Sudipta/Documents/DL/kronRLSMKStack/label_test_all.txt',header=None,sep=',')
-print(dfpred.head())
+#print(dfpred_test.shape)
+#print(dftest)
 
 y1 = dftrain.as_matrix()
 y1_test = dftest.as_matrix()
@@ -71,17 +76,24 @@ print('training error : ',n_error_train)
 breg = OneVsRestClassifier(svm.SVC(kernel='linear',  probability=True,random_state=np.random.RandomState(0), max_iter=1000))
 #breg = OneVsRestClassifier(GradientBoostingRegressor)
 y = np.transpose(y1)
-print(X.shape)
-print(y.shape)
+#print(X.shape)
+#print(y.shape)
 breg.fit(X, y)
 #test_predict = breg.predict(X_test)
 test_predict = breg.fit(X, y).decision_function(X_test)
+#print(sqrt(mean_squared_error(y_test, test_predict)))
+for x in np.nditer(y_test):
+    print(x)
+for x in np.nditer(test_predict):
+    print(x)
+print(sqrt(mean_squared_error(y_test, test_predict))/(np.linalg.norm(y_test)))
 np.savetxt('test_out.txt',test_predict,delimiter=',')
 #print(confusion_matrix(y_test, test_predict))
 
 
 n_classes = 1
 y_score = test_predict
+print('y_score.shape  ',y_score.shape)
 lw=2
 colors = cycle(['navy', 'turquoise', 'darkorange', 'cornflowerblue', 'teal'])
 
