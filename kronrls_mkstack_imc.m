@@ -53,37 +53,39 @@ function kronrls_mkstack1( K1, K2, y, train_idx, lambda, num_ones, y_test, test_
       [X,a1,v1] = svds(K1(:,:,i), d1);
       [Y,a2,v2] = svds(K2(:,:,j), d2);
 
-      lambda = [10^-3 10^-2 10^-1 1 10 100];
-      lambda1 = [10^-3 10^-2 10^-1 1 10 100];
-      loss = 1000;
-      for a = 1:length(lambda)	% parameter selection
-      	for b = 1:length(lambda1)
-      		[UU SS VV U S V] = dirtyIMC(y, X, Y, lambda(a), lambda1(b));
-      		Completed = U*S*V'+X*UU*SS*VV'*Y';
-      		l = norm(Completed-y_orig, 'fro')/norm(y_orig, 'fro');
-      		fprintf('%.3f\t%.3f\t%.3f\t%.3f\t%.3f\n', lambda(a), lambda1(b), l, rank(SS), rank(S));
-      		if(l < loss)
-      			loss = l; 
-            pred = Completed;
-      		end
-      	end
-      end
-      norm(pred(test_idx)-y_orig(test_idx), 'fro')/norm(y_orig(test_idx), 'fro')
-      pred(test_idx)
-      y_orig(test_idx)
+      %% dirty imc
+      %lambda = [10^-3 10^-2 10^-1 1 10 100];
+      %lambda1 = [10^-3 10^-2 10^-1 1 10 100];
+      %loss = 1000;
+      %for a = 1:length(lambda)	% parameter selection
+      %	for b = 1:length(lambda1)
+      %		[UU SS VV U S V] = dirtyIMC(y, X, Y, lambda(a), lambda1(b));
+      %		Completed = U*S*V'+X*UU*SS*VV'*Y';
+      %		l = norm(Completed-y_orig, 'fro')/norm(y_orig, 'fro');
+      %		fprintf('%.3f\t%.3f\t%.3f\t%.3f\t%.3f\n', lambda(a), lambda1(b), l, rank(SS), rank(S));
+      %		if(l < loss)
+      %			loss = l; 
+      %      pred = Completed;
+      %		end
+      %	end
+      %end
+      %norm(pred(test_idx)-y_orig(test_idx), 'fro')/norm(y_orig(test_idx), 'fro')
+      %pred(test_idx)
+      %y_orig(test_idx)
  
-      %threads = 1;
-      %lambda = 1e-6;
-      %maxiter = 100;
-      %d1 = size(y,1); d2 = size(y,2);
-      %k = min(d1,d2);
-      %imcOpt = sprintf('-n %d -k %d -l %s -t %d',threads,k,num2str(lambda),maxiter);
-      %% run IMC
-      %%[W, H, wtime] = train_mf(sparse(y),X,Y,W0,H0,imcOpt);
-      %[W, H] = IMC(y, X, Y, k, lambda, maxiter);
-      %relerr = norm(W'*H-y,'fro')^2 / norm(y,'fro')^2;
-      %fprintf('RelErr = %e \n',relerr);
-      %pred = X*W'*H*Y';
+      %% imc
+      threads = 1;
+      lambda = 1e-6;
+      maxiter = 100;
+      d1 = size(y,1); d2 = size(y,2);
+      k = min(d1,d2);
+      imcOpt = sprintf('-n %d -k %d -l %s -t %d',threads,k,num2str(lambda),maxiter);
+      % run IMC
+      %[W, H, wtime] = train_mf(sparse(y),X,Y,W0,H0,imcOpt);
+      [W, H] = IMC(y, X, Y, k, lambda, maxiter);
+      relerr = norm(W'*H-y_orig,'fro')^2 / norm(y_orig,'fro')^2;
+      fprintf('RelErr = %e \n',relerr);
+      pred = X*W'*H*Y';
 			
 			pred1 = reshape(pred, [1, size(y,1)*size(y,2)]);
 			%pred_test = pred_train(test_idx);			
