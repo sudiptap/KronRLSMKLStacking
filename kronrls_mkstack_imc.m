@@ -15,7 +15,7 @@ function kronrls_mkstack1( K1, K2, y, train_idx, lambda, num_ones, y_test, test_
 
   addpath 'dirtyIMC_code';
   addpath('imc-matlab');
-
+  addpath(genpath('leml-imf'));
 
 	assert(size(K1,3)>1 && size(K2,3)>1,'K1 and K2 must order 3 tensors');
     %disp(nnz(y_test));
@@ -81,11 +81,13 @@ function kronrls_mkstack1( K1, K2, y, train_idx, lambda, num_ones, y_test, test_
       k = min(d1,d2);
       imcOpt = sprintf('-n %d -k %d -l %s -t %d',threads,k,num2str(lambda),maxiter);
       % run IMC
-      %[W, H, wtime] = train_mf(sparse(y),X,Y,W0,H0,imcOpt);
-      [W, H] = IMC(y, X, Y, k, lambda, maxiter);
+      W0 = randn(k, d1); H0 = randn( k, d2);
+      [W, H, wtime] = train_mf(sparse(y),X,Y,W0,H0,imcOpt);
+      %[W, H] = IMC(y, X, Y, k, lambda, maxiter);
       relerr = norm(W'*H-y_orig,'fro')^2 / norm(y_orig,'fro')^2;
       fprintf('RelErr = %e \n',relerr);
       pred = X*W'*H*Y';
+
 			
 			pred1 = reshape(pred, [1, size(y,1)*size(y,2)]);
 			%pred_test = pred_train(test_idx);			

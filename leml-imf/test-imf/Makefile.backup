@@ -1,0 +1,42 @@
+CXX ?= g++
+CC ?= gcc
+CFLAGS = -Wall -Wconversion -g -fPIC -fopenmp -std=c++11 -std=gnu++0x
+CFLAGS = -Wall -Wconversion -O3 -fPIC -fopenmp  -std=c++11 -std=gnu++0x
+BLASFLAGS = -llapack_atlas -lf77blas -lcblas -latlas -lgfortran -L/u/rofuyu/.local/lib
+
+# ======================== flags for ICC on stampede ===========================
+#CXX = icc
+#CC = icc
+#ICC_CFLAGS = -Wall -Wconversion -O3 -fPIC -openmp -std=gnu++0x
+#ICC_BLAS = -I$MKLROOT/include -mkl=parallel -openmp 
+#BLASFLAGS = $(ICC_BLAS)
+#CFLAGS = $(ICC_CFLAGS)
+
+# ======================== flags for G++ on stampede ===========================
+# module swap intel gcc; module load mkl 
+#CXX = g++ 
+#CC = gcc
+#GCC_CFLAGS = -Wall -Wconversion -O3 -fPIC -fopenmp -std=gnu++0x
+#GCC_BLAS = -I${MKLROOT}/include -L${MKLROOT}/lib/intel64 -lmkl_intel_lp64 -lmkl_sequential -lmkl_core -lpthread -lm
+#BLASFLAGS = ${GCC_BLAS}
+#CFLAGS = ${GCC_CFLAGS}
+
+LIBSFLAGS= $(BLASFLAGS) #-lz -L../zlib
+
+LIBS = blas/blas.a
+SHVER = 1
+OS = $(shell uname)
+#LIBS = -lblas
+
+ALLLIB = ../src/dmat.o ../src/smat.o ../src/mf.o ../src/bilinear.o ../src/multiple_linear.o ../src/tron.o ../src/zlib_util.o ../src/zlib/libz.a ../src/blas/blas.a
+
+INC = -I../src
+
+
+all: test-imf
+
+test-imf: test-imf.cpp
+	$(CXX) $(CFLAGS) $(INC) -o test-imf test-imf.cpp $(ALLLIB) $(LIBSFLAGS)
+
+clean:
+	rm -f test-imf
