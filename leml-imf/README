@@ -1,0 +1,184 @@
+Introduction
+============
+	Inductive Matrix Completion (IMC) is an algorithm for recommender systems with side-information
+	of users and items. The IMC formulation incorporates features associated with rows (users) and
+	columns (items) in matrix completion, so that it enables predictions for users or items that were
+	not seen during training, and for which only features are known but no dyadic information (such
+	as ratings or linkages). IMC models the m-by-n user-item matrix A as
+	
+		A = X * W * H^T * Y^T,
+
+	where X is the m-by-f1 user (row) feature matrix and Y is the n-by-f2 item (column) feature matrix.
+	The IMC objective with some loss function l(a,b) and rank k is given as:
+
+		min_{W,H} l(A, X * W * H^T * Y^T) + 0.5 * \lambda * ( \| W \|_F^2 + \| H \|_F^2 ),
+
+	where W is f1-by-k and H is f2-by-k.
+
+	The IMC code is based on the LEML (Low-rank Empirical risk minimization for Multi-Label Learning)
+	project. It builds a MATLAB wrapper (mex file) for IMC.
+
+
+System Requirements
+===================
+	See the requirements for the LEML project (README_LEML).
+	
+	The random test 'test-imf/test-imf.cpp' requires stdc++11 (gcc 4.7 or greater). It also requires
+	a BLAS/LAPACK library (change the 'BLASFLAGS' in test-imf/Makefile according to	your system setup).
+
+
+Compilation 
+===========
+	$ make
+	$ leml-imf/matlab/train_mf.mexa64
+
+
+MATLAB Interface
+================
+	1. Requirement:
+		64-bit MATLAB on a Linux machine.
+
+	2. Simple example:
+
+		>> cd matlab
+		>> load('../datasets/ml-100k/ml-100k.mat');
+		>> [W, H, wall_time] = train_mf(A, X, Y, '-k 10');
+
+	3. Detailed usage of ``train_mf.mexa64'':
+
+		Usage: [W H wall_time] = train_mf(A, X, Y, [, 'options'])
+		       [W H wall_time] = train_mf(A, X, Y, W0, H0 [, 'options'])
+			   A : sparse m-by-n matrix
+			   X : dense or sparse m-by-f1 matrix
+			   Y : dense or sparse n-by-f2 matrix
+			   size(W0) = (rank, f1), size(H0) = (rank, f2)
+		options:
+			-s type : set type of solver (default 0)
+				0 -- L2R_LS (Squared Loss)
+				1 -- L2R_LR (Logistic Regression)
+				2 -- L2R_SVC (Squared Hinge Loss)
+				10 -- L2R_LS (Squared Loss) Fully observation
+		-k rank : set the rank (default 10)
+		-n threads : set the number of threads (default 4)
+		-l lambda : set the regularization parameter lambda (default 0.1)
+		-t max_iter: set the number of iterations (default 10)
+		-T max_tron_iter: set the number of iterations used in TRON (default 5)
+		-g max_cg_iter: set the number of iterations used in CG (default 20)
+		-e epsilon : set inner termination criterion epsilon of TRON (default 0.1)
+
+
+PYTHON Interface
+================
+	1. Requirement:
+		Python 2.7 with numpy and scipy packages (tested with python 2.7.6, numpy 1.8.2 and scipy 0.13.3).
+		BLAS/LAPACK library (update src/python/setup.py according to your system setup).
+
+	2. Use the train_mf() function in src/python/train_mf.py. Supported options are:
+
+		- k: rank (default 10)
+		- lamb: regularization parameter lambda (default 0.1)
+		- solver_type: type of solver (default 0)
+				0 -- L2R_LS (Squared Loss)
+				1 -- L2R_LR (Logistic Regression)
+				2 -- L2R_SVC (Squared Hinge Loss)
+				10 -- L2R_LS (Squared Loss) Fully observation
+		- maxiter: number of iterations (default 10)
+		- threads: number of threads (default 4)
+
+		The following command will run IMC on a random matrix with default settings:
+		
+		$ python train_mf.py
+
+
+Example Problem Settings
+========================
+	1. User (row) features are available, but no item (column) features:
+
+		If n is the number of items, then set the item feature matrix Y to be the identity matrix I of
+		size n. This will results in A = X * W * H^T, where H is n-by-k.
+
+		In Matlab, use the commands:
+		(speye(n) creates an n-by-n sparse identity matrix.)
+
+			>> [m, n] = size(A);
+			>> [W, H] = train_mf(A, X, speye(n), options);
+			
+	2. Both user and item features are not available:
+
+		In this case, you can train a matrix completion model A = W * H^T, where W is m-by-k and H is n-by-k.
+
+			>> [m, n] = size(A);
+			>> [W, H] = train_mf(A, speye(m), speye(n), options);
+
+		Note that matrix completion is a special case of IMC (A = X * W * H^T * Y^T) when X = I and Y = I.
+
+	3. Positive and Unlabeled (PU) setting both with and without user/item features:
+
+		IMC can also be used in the PU setting, where the unlabeled entries in A are treated as zeros with
+		solver type '-s 10'.
+		
+			>> [W, H] = train_mf(A, X, Y, '-s 10');
+
+		Other options for IMC can be modified, but '-s 10' is the solver setting. And for the settings
+		without user and/or item features, you can pass the corresponding identity matrices for X and Y
+		as mentioned above.
+
+
+Simulation Tests
+================
+	The package contains a random simulation test for IMC in 'test-imf/'. The test will generate a random
+	synthetic dataset. Specifically, it generates user and item (Gaussian random) feature matrices X and Y,
+	and a random low-rank matrix Z1 = W1 * H1^T, which are used to generate a sparse user-item matrix A with
+	uniform sampling. Then, the test program computes Z2 = W2 * H2^T using IMC with the generated X, Y and A,
+	and returns the relative error between Z1 and Z2, which should be quite small.
+	
+	We provide the random test as a standalone C++ program and for the Matlab wrapper.
+
+	1. For the standalone C++ test:
+
+		$ cd test-imf && make
+		$ ./test-imf
+
+		With the default settings, you should get a relative error (RelErr) of 4.253781e-04.
+
+	2. For the Matlab wrapper test (calls train_mf.mexa64):
+
+		>> do_test_imf();
+	
+		With the default settings, you should get a relative error (RelErr) of 2.287910e-04.
+
+
+Citation
+========
+	Please acknowledge the use of the code with a citation.
+
+	1. Hsiang-Fu Yu, Prateek Jain, Purushottam Kar, and Inderjit S. Dhillon,
+		Large-scale Multi-label Learning with Missing Labels, ICML 2014.
+
+		@inproceedings{yu2014largescal,
+			author = "Hsiang-Fu Yu AND Prateek Jain AND Purushottam Kar AND Inderjit S. Dhillon",
+			title = "Large-scale Multi-label Learning with Missing Labels",
+			booktitle = "International Conference on Machine Learning (ICML)",
+			page = "593—-601",
+			volume = "32",
+			issue = "1",
+			year = "2014"
+		}
+
+	2. Kai Zhong, Prateek Jain, and Inderjit S. Dhillon,
+		Efficient Matrix Sensing Using Rank-1 Gaussian Measurements, ALT 2015.
+
+		@inproceedings{zhong2015e,
+			author = "Kai Zhong AND Prateek Jain AND Inderjit S. Dhillon",
+			title = "Efficient Matrix Sensing Using Rank-1 Gaussian Measurements",
+			booktitle = "International Conference on Algorithmic Learning Theory (ALT)",
+			pages = "3--18",
+			year = "2015"
+		}
+
+
+Comments and Questions
+======================
+	For any questions and comments, please send your email to
+	Hsiang-Fu Yu <rofuyu@cs.utexas.edu> or Donghyuk Shin <dshin@cs.utexas.edu>.
+
