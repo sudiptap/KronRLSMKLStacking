@@ -31,7 +31,7 @@ for run=1:nruns
     %crossval_idx = crossvalind('Kfold',y(:),5);
     fold_aupr = [];
 
-    for fold=1:nfolds
+    for fold=1:1%nfolds
         fprintf('---------------\nRUN %d - FOLD %d \n', run, fold)
         train_idx = find(crossval_idx~=fold); 
         test_idx  = find(crossval_idx==fold);	
@@ -89,9 +89,12 @@ for run=1:nruns
 		%[ y2 ] = kronrls_pairwise_mkboost( K1, K2, y_train, lambda, regcoef, 50, true, num_ones );
 		%[ y2 ] = kronrls_mkboost( K1, K2, y_train, lambda, regcoef, 50, true, num_ones );
 		y_test(train_idx)=0; %y_test(test_idx)=1;
-		kronrls_mkstack1( K1, K2, y_train, train_idx, lambda, num_ones, y_test, test_idx, y);
+		%kronrls_mkstack1( K1, K2, y_train, train_idx, lambda, num_ones, y_test, test_idx, y);
 		%kronrls_mkstack( K1, K2, y_train, train_idx, lambda, num_ones, y_test, test_idx, y);
-        system('python stacking1.py');
+		kronrls_mkstack_imc( K1, K2, y_train, train_idx, lambda, num_ones, y_test, test_idx, y);
+
+        %system('python stacking1.py');
+
         % evaluate predictions
         %yy=y; 
         %yy(yy==0)=-1;%disp(size(yy)); return;

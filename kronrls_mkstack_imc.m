@@ -15,10 +15,6 @@ function kronrls_mkstack1( K1, K2, y, train_idx, lambda, num_ones, y_test, test_
 
   addpath 'dirtyIMC_code';
   addpath('imc-matlab');
-  
- 
- 
-
 
 
 	assert(size(K1,3)>1 && size(K2,3)>1,'K1 and K2 must order 3 tensors');
@@ -52,15 +48,10 @@ function kronrls_mkstack1( K1, K2, y, train_idx, lambda, num_ones, y_test, test_
 	label_test = zeros(1,size(test_idx,1));
 	for i=1:nA
 		for j=1:nB
-			%pred = kronrls(K1(:,:,i),K2(:,:,j),y, lambda);
-
       d1 = size(y,1); d2 = size(y,2);
       k = min(d1,d2);
       [X,a1,v1] = svds(K1(:,:,i), d1);
       [Y,a2,v2] = svds(K2(:,:,j), d2);
-      %lambda1 = 1; lambda2 = 1;
-      %[UU SS VV U S V] = dirtyIMC(y, X, Y, lambda1, lambda2);
-      %pred  = U*S*V'+X*UU*SS*VV'*Y'
 
       lambda = [10^-3 10^-2 10^-1 1 10 100];
       lambda1 = [10^-3 10^-2 10^-1 1 10 100];
