@@ -1,10 +1,10 @@
-function [] = sample()
-clear
+function [] = sample(nfolds, nruns, dataname)
+%clear
 seed = 12345678;
 rand('seed', seed);
-nfolds = 17; nruns=5;
+%nfolds = 10; nruns=5;
 
-dataname = 'nr';
+%dataname = 'nr';
 %dataname = 'gpcr';
 %dataname = 'ic';
 %dataname = 'e';
@@ -16,22 +16,22 @@ run_aupr  = [];
 alpha_m = [];
 
 %how many 1s do we have
-num_ones = 0;
-for y_row =1:size(y,1)
-	for y_col = 1:size(y,2)
-		if y(y_row, y_col)==1
-			num_ones = num_ones+1;
-		end
-	end
-end
+%num_ones = 0;
+%for y_row =1:size(y,1)
+%	for y_col = 1:size(y,2)
+%		if y(y_row, y_col)==1
+%			num_ones = num_ones+1;
+%		end
+%	end
+%end
 %num_ones = 10;
-for run=1:1
+for run=1:nruns
     % split folds
      crossval_idx = crossvalind('Kfold', length(y(:)), nfolds);
     %crossval_idx = crossvalind('Kfold',y(:),5);
     fold_aupr = [];
 
-    for fold=1:1%nfolds
+    for fold=1:nfolds
         fprintf('---------------\nRUN %d - FOLD %d \n', run, fold)
         train_idx = find(crossval_idx~=fold); 
         test_idx  = find(crossval_idx==fold);	
@@ -91,17 +91,17 @@ for run=1:1
 		y_test(train_idx)=0; %y_test(test_idx)=1;
 		kronrls_mkstack1( K1, K2, y_train, train_idx, lambda, num_ones, y_test, test_idx, y);
 		%kronrls_mkstack( K1, K2, y_train, train_idx, lambda, num_ones, y_test, test_idx, y);
-        
+        system('python stacking1.py');
         % evaluate predictions
-        yy=y; 
-        yy(yy==0)=-1;%disp(size(yy)); return;
+        %yy=y; 
+        %yy(yy==0)=-1;%disp(size(yy)); return;
 		
-        stats = evaluate_performance(y2(test_idx),yy(test_idx),'classification');
+        %stats = evaluate_performance(y2(test_idx),yy(test_idx),'classification');
 
-        fold_aupr = [fold_aupr, stats.aupr];
+        %fold_aupr = [fold_aupr, stats.aupr];
     end
     
-    run_aupr(run,:)=fold_aupr;
+    %run_aupr(run,:)=fold_aupr;
 end
-mean(mean(run_aupr,2))
+%mean(mean(run_aupr,2))
 end
