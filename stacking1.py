@@ -36,10 +36,10 @@ from math import sqrt
 #call matlab to generate predictions
 print('Call successfully done')
 
-dfpred = pd.read_table('C:/Users/Sudipta/Documents/DL/kronRLSMKStack/predictions_all.txt',header=None, sep=',')
-dfpred_test = pd.read_table('C:/Users/Sudipta/Documents/DL/kronRLSMKStack/predictions_test_all.txt',header=None, sep=',')
-dftrain = pd.read_csv('C:/Users/Sudipta/Documents/DL/kronRLSMKStack/label_train_all.txt',header=None,sep=',')
-dftest = pd.read_csv('C:/Users/Sudipta/Documents/DL/kronRLSMKStack/label_test_all.txt',header=None,sep=',')
+dfpred = pd.read_table('predictions_all.txt',header=None, sep=',')
+dfpred_test = pd.read_table('predictions_test_all.txt',header=None, sep=',')
+dftrain = pd.read_csv('label_train_all.txt',header=None,sep=',')
+dftest = pd.read_csv('label_test_all.txt',header=None,sep=',')
 #print(dfpred_test.shape)
 #print(dftest)
 
