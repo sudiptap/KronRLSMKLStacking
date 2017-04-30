@@ -69,8 +69,12 @@ print(sqrt(mean_squared_error(y_test, test_predict))/(np.linalg.norm(y_test)))
 np.savetxt('test_out.txt',test_predict,delimiter=',')
 #print(confusion_matrix(y_test, test_predict))'''
 
+K =10 
+
 bsf = 0
+bsf_topk = 0.0
 avg = 0
+avg_topk = 0.0
 bsf_ind = -1
 n_classes = 1
 lw=2
@@ -87,6 +91,25 @@ for kernel_id in range(X.shape[1]):
         precision[i], recall[i], _ = precision_recall_curve(y_test[:, i],
                                                             y_score[:, i])
         average_precision[i] = average_precision_score(y_test[:, i], y_score[:, i])
+        
+        # sort score and find how many 1's are captured in top k scores
+        pair = [y_score[:,i], y_test[:,i]]
+        pair = pd.DataFrame(pair)
+        pair = pair.sort(0, axis=1)
+        pair = pair.as_matrix()
+        print(pair)
+        sums = (pair[1,:] == 1).sum()
+        print(sums)
+        cnt = 0.0
+        for e in pair[1, -K:]:
+            if e == 1.0:
+                cnt = cnt + 1 
+        print(cnt)
+        topk_ratio = cnt / sums
+        print(topk_ratio)
+        avg_topk = avg_topk + topk_ratio
+        if bsf_topk < topk_ratio:
+            bsf_topk = topk_ratio
 
     if average_precision[0] >= bsf:
         bsf = average_precision[0]
@@ -107,5 +130,8 @@ for kernel_id in range(X.shape[1]):
 
 print('best is ',bsf,' and corresponding id is ', bsf_ind)
 print('avg is ',avg/X.shape[1])   
+print('k is ',K,'and')
+print('best top k is ', bsf_topk)
+print('avg top k is ', avg_topk/100)
     
     
