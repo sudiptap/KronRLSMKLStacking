@@ -33,10 +33,10 @@ from sklearn.multiclass import OneVsRestClassifier
 from sklearn.metrics import mean_squared_error
 from math import sqrt
 
-dfpred = pd.read_table('C:/Users/Sudipta/Documents/DL/kronRLSMKStack/predictions_all.txt',header=None, sep=',')
-dfpred_test = pd.read_table('C:/Users/Sudipta/Documents/DL/kronRLSMKStack/predictions_test_all.txt',header=None, sep=',')
-dftrain = pd.read_csv('C:/Users/Sudipta/Documents/DL/kronRLSMKStack/label_train_all.txt',header=None,sep=',')
-dftest = pd.read_csv('C:/Users/Sudipta/Documents/DL/kronRLSMKStack/label_test_all.txt',header=None,sep=',')
+dfpred = pd.read_table('predictions_all.txt',header=None, sep=',')
+dfpred_test = pd.read_table('predictions_test_all.txt',header=None, sep=',')
+dftrain = pd.read_csv('label_train_all.txt',header=None,sep=',')
+dftest = pd.read_csv('label_test_all.txt',header=None,sep=',')
 #print(dfpred_test.shape)
 #print(dftest)
 
@@ -94,16 +94,16 @@ for kernel_id in range(X.shape[1]):
     avg = avg + average_precision[0]
 
     # Plot Precision-Recall curve
-    plt.clf()
-    plt.plot(recall[0], precision[0], lw=lw, color='navy',
-             label='Precision-Recall curve')
-    plt.xlabel('Recall')
-    plt.ylabel('Precision')
-    plt.ylim([0.0, 1.05])
-    plt.xlim([0.0, 1.0])
-    plt.title('Precision-Recall example: AUC={0:0.2f}'.format(average_precision[0]))
-    plt.legend(loc="lower left")
-    plt.show()
+#    plt.clf()
+#    plt.plot(recall[0], precision[0], lw=lw, color='navy',
+#             label='Precision-Recall curve')
+#    plt.xlabel('Recall')
+#    plt.ylabel('Precision')
+#    plt.ylim([0.0, 1.05])
+#    plt.xlim([0.0, 1.0])
+#    plt.title('Precision-Recall example: AUC={0:0.2f}'.format(average_precision[0]))
+#    plt.legend(loc="lower left")
+#    plt.show()
 
 print('best is ',bsf,' and corresponding id is ', bsf_ind)
 print('avg is ',avg/X.shape[1])   
