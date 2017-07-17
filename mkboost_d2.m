@@ -14,7 +14,7 @@ function [O] = mkboost_d2(y_train_orig, kernels, dist, lambda, num_ones)
 		%disp(t);
 		%call the sampling here		
 		%[y_train] = sample_examples(dist, y_train_orig, floor(0.50*size(y_train_orig,1)*size(y_train_orig,2)));
-		[y_train] = sample_examples(dist, y_train_orig, floor(0.3*sum(sum(y_train_orig==1))));
+		[y_train] = sample_examples(dist, y_train_orig, floor(0.7*sum(sum(y_train_orig==1))));
 		loss = realmax('single');
 		best_kernel_index = -1;
 		%h{t} = zeros(
@@ -136,7 +136,7 @@ function [loss, predicted] = getLoss_1(predicted, original, num_ones, dist)
 	%disp(predicted);
 	for i=1:size(predicted,1)
 		for j=1:size(predicted,2)
-			if predicted(i,j)>0.05
+			if predicted(i,j)>0.12
 				predicted(i,j)=1;
 			else
 				predicted(i,j)=0;

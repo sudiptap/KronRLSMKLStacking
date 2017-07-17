@@ -2,10 +2,10 @@ function [] = sample()
 clear
 seed = 12345678;
 rand('seed', seed);
-nfolds = 17; nruns=5;
+nfolds = 5; nruns=1; n_validation_folds=10
 
-dataname = 'nr'; %please use nflods=17 for best result
-%dataname = 'gpcr'; %please use nflods=10 for best result
+%dataname = 'nr'; %please use nflods=17 for best result
+dataname = 'gpcr'; %please use nflods=10 for best result
 %dataname = 'ic'; %please use nflods=20 for best result
 %dataname = 'e';
 
@@ -17,6 +17,11 @@ alpha_m = [];
 
 %how many 1s do we have
 num_ones = 0;
+
+number_of_rows = size(y,1)
+number_of_cols = size(y,2)
+
+
 for y_row =1:size(y,1)
 	for y_col = 1:size(y,2)
 		if y(y_row, y_col)==1
@@ -27,17 +32,38 @@ end
 %num_ones = 10;
 for run=1:1
     % split folds
-     crossval_idx = crossvalind('Kfold', length(y(:)), nfolds);
-    %crossval_idx = crossvalind('Kfold',y(:),5);
+    crossval_idx = crossvalind('Kfold', length(y(:)), nfolds);
+	%extract the validation now
+	
     fold_aupr = [];
 
-    for fold=1:1%nfolds
+    for fold=1:nfolds
         fprintf('---------------\nRUN %d - FOLD %d \n', run, fold)
         train_idx = find(crossval_idx~=fold); 
         test_idx  = find(crossval_idx==fold);	
-
+		%validation_idx = find(validation_idx)
+		
         y_train = y; y_test = y;
         y_train(test_idx) = 0; %disp(size(train_idx)); disp(size(test_idx));
+		
+		%validation block - start
+		
+		%training dataset is extracted
+		%extract the validation dataset now
+		%validation_idx = crossvalind('Kfold', length(y(:)), n_validation_folds);
+		%train_idx = find(validation_idx~=10); 
+        %validation_idx  = find(validation_idx==10);
+		%y_train = y_train1; y_validation = y;
+        %y_train1(validation_idx) = 0; %disp(size(train_idx)); disp(size(test_idx));
+		%y_validation(train_idx)=0;
+		%y_test(train_idx)=0; %y_test(test_idx)=1;
+		%y_test(validation_idx)=0;
+		%disp(intersect(train_idx,validation_idx));
+		%validation_file_name = strcat('example_validation_',int2str(fold),'.txt');		
+		%dlmwrite(validation_file_name,reshape(y_validation, [number_of_rows number_of_cols]), '\t')
+		
+		%validation block - end
+		
 		num_ones = nnz(y_train);
 		%disp(num_ones);
 		y_train_temp = reshape(y_train,[1,size(y_train,1)*size(y_train,2)]);
@@ -81,7 +107,7 @@ for run=1:1
         K2(:,:,i+1) = kernel_gip(y_train,2, 1);
 
         %% perform predictions
-        lambda = 0.1;
+        lambda = 1;
         regcoef = 0.25;
         
         %[ y2 , alpha, beta ] = kronrls_mkl( K1, K2, y_train, lambda, regcoef, num_ones );
@@ -89,7 +115,20 @@ for run=1:1
 		%[ y2 ] = kronrls_pairwise_mkboost( K1, K2, y_train, lambda, regcoef, 50, true, num_ones );
 		%[ y2 ] = kronrls_mkboost( K1, K2, y_train, lambda, regcoef, 50, true, num_ones );
 		y_test(train_idx)=0; %y_test(test_idx)=1;
-		kronrls_mkstack1( K1, K2, y_train, train_idx, lambda, num_ones, y_test, test_idx, y);
+		%y_test(validation_idx)=0;
+		%write the train and test files now - later will be used by autoencoders
+		%disp(reshape(y_train, [number_of_rows number_of_cols]))
+		%dlmwrite('example_train.txt',reshape(y_train, [number_of_rows number_of_cols], 'delimiter', '\t'))
+		%dlmwrite('example_test.txt',reshape(y_test, [number_of_rows number_of_cols], 'delimiter', '\t'))
+		
+		
+		
+		
+		
+		
+		%disp(reshape(y_test, [number_of_rows number_of_cols]))
+		
+		kronrls_mkstack1( K1, K2, y_train, train_idx, lambda, num_ones, y_test, test_idx, y, fold);
 		%kronrls_mkstack( K1, K2, y_train, train_idx, lambda, num_ones, y_test, test_idx, y);
         
         % evaluate predictions

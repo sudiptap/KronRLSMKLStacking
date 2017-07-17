@@ -1,4 +1,4 @@
-function kronrls_mkstack1( K1, K2, y, train_idx, lambda, num_ones, y_test, test_idx, y_orig, fold)
+function kronrls_mkstack1( K1, K2, y, train_idx, lambda, num_ones, y_test, test_idx, y_orig, fold, validation_idx)
 %KRONRLS_MKL Summary of this function goes here
 %   INPUTS
 %    'K1' : 3 dimensional array of kernels
@@ -35,7 +35,7 @@ function kronrls_mkstack1( K1, K2, y, train_idx, lambda, num_ones, y_test, test_
 	stacking_cols = nA*nB;
 	out = zeros(size(train_idx,1), stacking_cols); %disp(size(out));
 	out_test = zeros(size(test_idx,1), stacking_cols); %disp(size(out_test));
-	%out_validation = zeros(size(validation_idx,1), stacking_cols); %disp(size(out_validation));
+	out_validation = zeros(size(validation_idx,1), stacking_cols); %disp(size(out_validation));
 	%record all results for further analysis
 	%prediction = cell(size(K1,1)*size(K1,2));
 	%prediction = zeros(:,:);
@@ -45,7 +45,7 @@ function kronrls_mkstack1( K1, K2, y, train_idx, lambda, num_ones, y_test, test_
 	%orig_test = reshape(y_test, [1, size(y_test,1)*size(y_test,2)]);
 	label_train = zeros(1,size(train_idx,1));
 	label_test = zeros(1,size(test_idx,1));
-	%label_validation = zeros(1,size(validation_idx,1));
+	label_validation = zeros(1,size(validation_idx,1));
 	for i=1:nA
 		for j=1:nB
 			pred = kronrls(K1(:,:,i),K2(:,:,j),y, lambda);
@@ -60,16 +60,16 @@ function kronrls_mkstack1( K1, K2, y, train_idx, lambda, num_ones, y_test, test_
 					out(x_train_idx,new_col_idx) = pred1(1,x);	
 					label_train(1,x_train_idx)=orig(1,x);	
 					x_train_idx=x_train_idx+1;									
-				else ismember(x,test_idx)
+				elseif ismember(x,test_idx)
 					%ismember(x,test_idx)	
 					out_test(x_test_idx,new_col_idx) = pred1(1,x);
 					label_test(1,x_test_idx)=orig(1,x);	
 					x_test_idx=x_test_idx+1;
-				%else
+				else
 					%ismember(x,test_idx)	
-				%    out_validation(x_validation_idx,new_col_idx) = pred1(1,x);
-				%	label_validation(1,x_validation_idx)=orig(1,x);	
-				%	x_validation_idx=x_validation_idx+1;					
+				    out_validation(x_validation_idx,new_col_idx) = pred1(1,x);
+					label_validation(1,x_validation_idx)=orig(1,x);	
+					x_validation_idx=x_validation_idx+1;					
 				end 
 			end
 			new_col_idx=new_col_idx+1;
@@ -82,10 +82,10 @@ function kronrls_mkstack1( K1, K2, y, train_idx, lambda, num_ones, y_test, test_
 	cd(int2str(fold));
 	csvwrite('predictions_all.txt', out)
 	csvwrite('predictions_test_all.txt', out_test)
-	%csvwrite('predictions_validation_all.txt', out_validation)
+	csvwrite('predictions_validation_all.txt', out_validation)
 	csvwrite('label_train_all.txt', label_train)
 	csvwrite('label_test_all.txt', label_test)
-	%csvwrite('label_validation_all.txt', label_validation)
+	csvwrite('label_validation_all.txt', label_validation)
 	cd ..;
 	
 	

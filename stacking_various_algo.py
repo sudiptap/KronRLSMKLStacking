@@ -13,6 +13,7 @@ from sklearn.linear_model import LinearRegression, Ridge
 from sklearn.linear_model import LogisticRegression
 from sklearn.datasets import make_hastie_10_2
 from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.ensemble import AdaBoostClassifier
 from sklearn.manifold import TSNE
 import numpy as np
 import pandas as pd
@@ -33,25 +34,48 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import label_binarize
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.metrics import mean_squared_error
+from sklearn.decomposition import PCA
 from math import sqrt
+from sklearn.svm import NuSVC
+from sklearn.svm import SVR
+from sklearn.model_selection import GridSearchCV, cross_val_score
 
 #call matlab to generate predictions
 print('Call successfully done')
 avg = 0;
 for i in range(5):
-    dfpred = pd.read_table('C:/Users/Sudipta/Documents/DL/kronRLSMKStack/GPCR_stack/Folds/5fold/'+str(i+1)+'/predictions_all.txt',header=None, sep=',')
-    dfpred_test = pd.read_table('C:/Users/Sudipta/Documents/DL/kronRLSMKStack/GPCR_stack/Folds/5fold/'+str(i+1)+'/predictions_test_all.txt',header=None, sep=',')
-    dftrain = pd.read_csv('C:/Users/Sudipta/Documents/DL/kronRLSMKStack/GPCR_stack/Folds/5fold/'+str(i+1)+'/label_train_all.txt',header=None,sep=',')
-    dftest = pd.read_csv('C:/Users/Sudipta/Documents/DL/kronRLSMKStack/GPCR_stack/Folds/5fold/'+str(i+1)+'/label_test_all.txt',header=None,sep=',')
+    dfpred = pd.read_table('C:/Users/Sudipta/Documents/DL/kronRLSMKStack/GPCR_stack_new/Folds/5fold/'+str(i+1)+'/predictions_all.txt',header=None, sep=',')
+    dfpred_test = pd.read_table('C:/Users/Sudipta/Documents/DL/kronRLSMKStack/GPCR_stack_new/Folds/5fold/'+str(i+1)+'/predictions_test_all.txt',header=None, sep=',')
+    dftrain = pd.read_csv('C:/Users/Sudipta/Documents/DL/kronRLSMKStack/GPCR_stack_new/Folds/5fold/'+str(i+1)+'/label_train_all.txt',header=None,sep=',')
+    dftest = pd.read_csv('C:/Users/Sudipta/Documents/DL/kronRLSMKStack/GPCR_stack_new/Folds/5fold/'+str(i+1)+'/label_test_all.txt',header=None,sep=',')
+    '''
+    dfpred = pd.read_table('C:/Users/Sudipta/Documents/DL/kronRLSMKStack/GPCR_stack/Folds/5fold/'+1+'/predictions_all.txt',header=None, sep=',')
+    dfpred_test = pd.read_table('C:/Users/Sudipta/Documents/DL/kronRLSMKStack/GPCR_stack/Folds/5fold/'+1+'/predictions_test_all.txt',header=None, sep=',')
+    dftrain = pd.read_csv('C:/Users/Sudipta/Documents/DL/kronRLSMKStack/GPCR_stack/Folds/5fold/'+1+'/label_train_all.txt',header=None,sep=',')
+    dftest = pd.read_csv('C:/Users/Sudipta/Documents/DL/kronRLSMKStack/GPCR_stack/Folds/5fold/'+1+'/label_test_all.txt',header=None,sep=',')
+    '''
     #print(dfpred_test.shape)
     #print(dftest)
     
+    
+    
     y1 = dftrain.as_matrix()
     y1_test = dftest.as_matrix()
-    X = dfpred.as_matrix()
-    X_test = dfpred_test.as_matrix()
+    #X = dfpred.as_matrix()
+    #X_test = dfpred_test.as_matrix()
+    #X = dfpred.iloc[:,[9,19,49,79,99]].as_matrix()           #for IC
+    #X_test = dfpred_test.iloc[:,[9,19,49,79,99]].as_matrix() #for IC
+    X = dfpred.iloc[:,[3,6,16,17,19,46,47,49,66,67,69,76,77,79,83,86,87,89,93,96,97,99]].as_matrix()           #for GCPR
+    X_test = dfpred_test.iloc[:,[3,6,16,17,19,46,47,49,66,67,69,76,77,79,83,86,87,89,93,96,97,99]].as_matrix() #for GCPR
     y = np.transpose(y1)
     y_test = np.transpose(y1_test)
+    
+    
+    
+    #X_train, X_validation, y_train, y_validation = train_test_split(X, y, test_size=0.33, random_state=42)
+
+    #X_test = X_validation
+    #y_test = y_validation
     
     '''
     rng = np.random.RandomState(2)
@@ -75,22 +99,32 @@ for i in range(5):
                                 
     #X = dfpred.as_matrix()
     #y1 = np.ones(72)#dftrain.as_matrix()
-    #breg = LogisticRegression()
+    #breg = LogisticRegression(penalty='l2', dual=False, tol=0.0001, C=1, fit_intercept=True, intercept_scaling=1, class_weight=None, random_state=None, solver='liblinear', max_iter=500, multi_class='ovr', verbose=0, warm_start=False, n_jobs=1)
     #breg = svm.OneClassSVM(kernel='sigmoid',max_iter=1000)
     
-    
-    breg = OneVsRestClassifier(svm.SVC(kernel='rbf', cache_size=200, coef0=0.0, verbose=True, degree=10, probability=True,random_state=np.random.RandomState(0), max_iter=10000, shrinking=True, C=1, tol=0.00001, decision_function_shape='ovr'))
-    #breg = GradientBoostingClassifier(n_estimators=100, learning_rate=1.0, max_depth=1, random_state=0)#.fit(X_train, y_train)
+    #breg = svm.SVC()
+    breg = OneVsRestClassifier(svm.SVC(kernel='rbf', cache_size=200, coef0=1.0, verbose=True, degree=10, probability=True,random_state=np.random.RandomState(0), max_iter=10000, shrinking=True, C=1, tol=0.00001, decision_function_shape='ovr'))
+    #breg = GradientBoostingClassifier(n_estimators=500, learning_rate=0.01, max_depth=4, random_state=4242)#.fit(X_train, y_train)
     
     #breg = OneVsRestClassifier(svm.SVR(kernel='rbf', cache_size=200, coef0=0.0, verbose=True, degree=10, max_iter=10000, shrinking=True,C=1, tol=0.00001))
-    #breg = OneVsRestClassifier(GradientBoostingRegressor)
+    #breg = OneVsRestClassifier(GradientBoostingRegressor)    
     y = np.transpose(y1)
     #print(X.shape)
     #print(y.shape)
+    #trying PCA
+    '''pca = PCA(n_components=50)
+    pca.fit(X)
+    pca.fit(X_test)
+    print(pca.explained_variance_ratio_) 
+    X = pca.fit_transform(X)
+    X_test = pca.fit_transform(X_test)
+    print(X.shape)'''
+    
     breg.fit(X, y)
     #train_predict = breg.predict(X)
     test_predict = breg.fit(X, y).decision_function(X_test)
-    print(test_predict.shape)
+    test_predict = test_predict.reshape(test_predict[0],1)
+    #print('here ',test_predict.shape)
     #for x in np.nditer(breg.coef_):
     #    print(x)
     
@@ -107,7 +141,7 @@ for i in range(5):
     #print(sqrt(mean_squared_error(y_test, test_predict))/(np.linalg.norm(y_test)))
     np.savetxt('test_out.txt',test_predict,delimiter=',')
     #print(confusion_matrix(y_test, test_predict))
-    print(y.shape[1])
+    #print(y.shape[1])
     
     n_classes = y.shape[1]
     y_score = test_predict
@@ -121,8 +155,7 @@ for i in range(5):
     average_precision = dict()
     
     for i in range(n_classes):
-        precision[i], recall[i], _ = precision_recall_curve(y_test[:, i],
-                                                            y_score[:, i])
+        precision[i], recall[i], _ = precision_recall_curve(y_test[:, i], y_score[:, i])
         average_precision[i] = average_precision_score(y_test[:, i], y_score[:, i])
     
     # Compute micro-average ROC curve and ROC area

@@ -11,8 +11,6 @@ from sklearn.ensemble import AdaBoostRegressor
 from sklearn.ensemble import ExtraTreesRegressor
 from sklearn.linear_model import LinearRegression, Ridge
 from sklearn.linear_model import LogisticRegression
-from sklearn.datasets import make_hastie_10_2
-from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.manifold import TSNE
 import numpy as np
 import pandas as pd
@@ -33,6 +31,14 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import label_binarize
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.metrics import mean_squared_error
+from sklearn.model_selection import cross_val_score
+from sklearn.datasets import make_blobs
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import ExtraTreesClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.datasets import make_hastie_10_2
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn import linear_model, datasets
 from math import sqrt
 
 #call matlab to generate predictions
@@ -77,20 +83,17 @@ for i in range(5):
     #y1 = np.ones(72)#dftrain.as_matrix()
     #breg = LogisticRegression()
     #breg = svm.OneClassSVM(kernel='sigmoid',max_iter=1000)
-    
-    
-    breg = OneVsRestClassifier(svm.SVC(kernel='rbf', cache_size=200, coef0=0.0, verbose=True, degree=10, probability=True,random_state=np.random.RandomState(0), max_iter=10000, shrinking=True, C=1, tol=0.00001, decision_function_shape='ovr'))
-    #breg = GradientBoostingClassifier(n_estimators=100, learning_rate=1.0, max_depth=1, random_state=0)#.fit(X_train, y_train)
-    
-    #breg = OneVsRestClassifier(svm.SVR(kernel='rbf', cache_size=200, coef0=0.0, verbose=True, degree=10, max_iter=10000, shrinking=True,C=1, tol=0.00001))
+    clf = linear_model.Lasso(alpha=0.1)
+    clf.fit(X, y)
     #breg = OneVsRestClassifier(GradientBoostingRegressor)
     y = np.transpose(y1)
     #print(X.shape)
     #print(y.shape)
-    breg.fit(X, y)
+    test_predict = clf.predict(X_test)
+    print(test_predict)
+    print(clf.score(X_test, y_test))
     #train_predict = breg.predict(X)
-    test_predict = breg.fit(X, y).decision_function(X_test)
-    print(test_predict.shape)
+    #test_predict = breg.fit(X, y).decision_function(X_test)
     #for x in np.nditer(breg.coef_):
     #    print(x)
     
@@ -107,9 +110,9 @@ for i in range(5):
     #print(sqrt(mean_squared_error(y_test, test_predict))/(np.linalg.norm(y_test)))
     np.savetxt('test_out.txt',test_predict,delimiter=',')
     #print(confusion_matrix(y_test, test_predict))
-    print(y.shape[1])
+    print('n_classes =' ,y.shape[1])
     
-    n_classes = y.shape[1]
+    n_classes = 2#y.shape[1]
     y_score = test_predict
     print('y_score.shape  ',y_score.shape)
     lw=2

@@ -1,9 +1,11 @@
-# KronRLSMKLStacking
-Kronecker Regularized Least Squares with Multiple Kernels Learning through Stacking
+# kronrlsmkl
+Matlab implementation of the Kronecker Regularized Least Squares with multiple kernels algorithm.
 
-Steps to run :
-------------------
-1. Open Matlab and call sample_kronrlsmkstack.m
-2. Please look at the sample_kronrlsmkstack.m code to change datasets. Please use nfolds-value accordingly for best AUPR. nfolds values are commented in the code.
-3. sample_kronrlsmkstack produces output files to be used for AUPR calculation. These files are the following: predictions_all.txt, predictions_test_all.txt, label_test_all.txt and label_train_all.txt. 
-4. Run stacking1.py to plot and generate AUPR. Please make sure you have the above mentioned files in current directory.
+## Usage
+Drug-target information should be represented in adjacency matrix format, and drug and target kernels are represented as 3D-matrices, where the third dimension refers to each kernel.
+
+Data matrices can be downloaded from http://www.cin.ufpe.br/~acan/kronrlsmkl/
+
+## Please cite:
+Nascimento, André CA, Ricardo BC Prudêncio, and Ivan G. Costa. "A multiple kernel learning algorithm for drug-target interaction prediction." BMC Bioinformatics 17, no. 1 (2016): 1. 
+URL: <http://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-016-0890-3>
