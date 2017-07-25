@@ -5,8 +5,8 @@ rand('seed', seed);
 nfolds = 5; nruns=1; n_validation_folds=10
 
 %dataname = 'nr'; %please use nflods=17 for best result
-dataname = 'gpcr'; %please use nflods=10 for best result
-%dataname = 'ic'; %please use nflods=20 for best result
+%dataname = 'gpcr'; %please use nflods=10 for best result
+dataname = 'ic'; %please use nflods=20 for best result
 %dataname = 'e';
 
 

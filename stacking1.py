@@ -39,10 +39,10 @@ from math import sqrt
 print('Call successfully done')
 avg = 0;
 for i in range(5):
-    dfpred = pd.read_table('C:/Users/Sudipta/Documents/DL/kronRLSMKStack/GPCR_stack/Folds/5fold/'+str(i+1)+'/predictions_all.txt',header=None, sep=',')
-    dfpred_test = pd.read_table('C:/Users/Sudipta/Documents/DL/kronRLSMKStack/GPCR_stack/Folds/5fold/'+str(i+1)+'/predictions_test_all.txt',header=None, sep=',')
-    dftrain = pd.read_csv('C:/Users/Sudipta/Documents/DL/kronRLSMKStack/GPCR_stack/Folds/5fold/'+str(i+1)+'/label_train_all.txt',header=None,sep=',')
-    dftest = pd.read_csv('C:/Users/Sudipta/Documents/DL/kronRLSMKStack/GPCR_stack/Folds/5fold/'+str(i+1)+'/label_test_all.txt',header=None,sep=',')
+    dfpred = pd.read_table('C:/Users/Sudipta/Documents/DL/kronRLSMKStack/NR/'+str(i+1)+'/predictions_all.txt',header=None, sep=',')
+    dfpred_test = pd.read_table('C:/Users/Sudipta/Documents/DL/kronRLSMKStack/NR/'+str(i+1)+'/predictions_test_all.txt',header=None, sep=',')
+    dftrain = pd.read_csv('C:/Users/Sudipta/Documents/DL/kronRLSMKStack/NR/'+str(i+1)+'/label_train_all.txt',header=None,sep=',')
+    dftest = pd.read_csv('C:/Users/Sudipta/Documents/DL/kronRLSMKStack/NR/'+str(i+1)+'/label_test_all.txt',header=None,sep=',')
     #print(dfpred_test.shape)
     #print(dftest)
     

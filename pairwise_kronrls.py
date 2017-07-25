@@ -1,8 +1,8 @@
 import os
 import sys
 
-from sklearn import model_selection
-from sklearn.model_selection import train_test_split
+#from sklearn import model_selection
+#from sklearn.model_selection import train_test_split
 from sklearn import datasets, metrics, preprocessing
 #from stacked_generalization.lib.stacking import StackedRegressor
 from sklearn.ensemble import RandomForestRegressor
@@ -17,28 +17,28 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.font_manager
 from sklearn import svm
-from sklearn.ensemble import IsolationForest
+#from sklearn.ensemble import IsolationForest
 from sklearn.metrics import precision_recall_curve
 from sklearn.metrics import confusion_matrix
 from sklearn.multiclass import OneVsRestClassifier
-from sklearn.model_selection import train_test_split
+#from sklearn.model_selection import train_test_split
 
 from itertools import cycle
 
 from sklearn import svm, datasets
 from sklearn.metrics import precision_recall_curve
 from sklearn.metrics import average_precision_score
-from sklearn.model_selection import train_test_split
+#from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import label_binarize
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.metrics import mean_squared_error
 from math import sqrt
 
-
-dfpred = pd.read_table('C:/Users/Sudipta/Documents/DL/kronRLSMKStack/predictions_all.txt',header=None, sep=',')
-dfpred_test = pd.read_table('C:/Users/Sudipta/Documents/DL/kronRLSMKStack/predictions_validation_all.txt',header=None, sep=',')
-dftrain = pd.read_csv('C:/Users/Sudipta/Documents/DL/kronRLSMKStack/label_train_all.txt',header=None,sep=',')
-dftest = pd.read_csv('C:/Users/Sudipta/Documents/DL/kronRLSMKStack/label_validation_all.txt',header=None,sep=',')
+#foldername = "C:\Users\Sudipta\Documents\DL\kronRLSMKStack\results\GPCR\"
+dfpred = pd.read_table('C:/Users/Sudipta/Documents/DL/kronRLSMKStack/results/GPCR/1/predictions_all.txt',header=None, sep=',')
+dfpred_test = pd.read_table('C:/Users/Sudipta/Documents/DL/kronRLSMKStack/results/GPCR/1/predictions_validation_all.txt',header=None, sep=',')
+dftrain = pd.read_csv('C:/Users/Sudipta/Documents/DL/kronRLSMKStack/results/GPCR/1/label_train_all.txt',header=None,sep=',')
+dftest = pd.read_csv('C:/Users/Sudipta/Documents/DL/kronRLSMKStack/results/GPCR/1/label_validation_all.txt',header=None,sep=',')
 #print(dfpred_test.shape)
 #print(dftest)
 
@@ -108,11 +108,13 @@ for kernel_id in range(X.shape[1]):
     plt.xlim([0.0, 1.0])
     plt.title('Precision-Recall example: AUC={0:0.2f}'.format(average_precision[0]))
     plt.legend(loc="lower left")
-    plt.show()
+    #plt.show()
 
 print('best is ',bsf,' and corresponding id is ', bsf_ind)
 print('avg is ',avg/X.shape[1])   
     
-for p in all_aupr:
-    print(p)
+## sort list
+sorted_aupr = sorted(range(len(all_aupr)), key=lambda k: all_aupr[k])
+with open('tmpfile','w') as f:
+    f.write(' '.join(map(str, sorted_aupr)))
   

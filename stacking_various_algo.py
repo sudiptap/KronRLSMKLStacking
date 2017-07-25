@@ -1,8 +1,8 @@
 import os
 import sys
 
-from sklearn import model_selection
-from sklearn.model_selection import train_test_split
+#from sklearn import model_selection
+#from sklearn.model_selection import train_test_split
 from sklearn import datasets, metrics, preprocessing
 #from stacked_generalization.lib.stacking import StackedRegressor
 from sklearn.ensemble import RandomForestRegressor
@@ -20,7 +20,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.font_manager
 from sklearn import svm
-from sklearn.ensemble import IsolationForest
+#from sklearn.ensemble import IsolationForest
 from sklearn.metrics import precision_recall_curve
 from sklearn.metrics import confusion_matrix
 from sklearn.multiclass import OneVsRestClassifier
@@ -30,7 +30,7 @@ from itertools import cycle
 from sklearn import svm, datasets
 from sklearn.metrics import precision_recall_curve
 from sklearn.metrics import average_precision_score
-from sklearn.model_selection import train_test_split
+#from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import label_binarize
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.metrics import mean_squared_error
@@ -38,16 +38,18 @@ from sklearn.decomposition import PCA
 from math import sqrt
 from sklearn.svm import NuSVC
 from sklearn.svm import SVR
-from sklearn.model_selection import GridSearchCV, cross_val_score
+#from sklearn.model_selection import GridSearchCV, cross_val_score
 
 #call matlab to generate predictions
 print('Call successfully done')
+
+foldername = 'C:/Users/Sudipta/Documents/DL/kronRLSMKStack/results/GPCR/'
 avg = 0;
 for i in range(5):
-    dfpred = pd.read_table('C:/Users/Sudipta/Documents/DL/kronRLSMKStack/GPCR_stack_new/Folds/5fold/'+str(i+1)+'/predictions_all.txt',header=None, sep=',')
-    dfpred_test = pd.read_table('C:/Users/Sudipta/Documents/DL/kronRLSMKStack/GPCR_stack_new/Folds/5fold/'+str(i+1)+'/predictions_test_all.txt',header=None, sep=',')
-    dftrain = pd.read_csv('C:/Users/Sudipta/Documents/DL/kronRLSMKStack/GPCR_stack_new/Folds/5fold/'+str(i+1)+'/label_train_all.txt',header=None,sep=',')
-    dftest = pd.read_csv('C:/Users/Sudipta/Documents/DL/kronRLSMKStack/GPCR_stack_new/Folds/5fold/'+str(i+1)+'/label_test_all.txt',header=None,sep=',')
+    dfpred = pd.read_table(foldername+str(i+1)+'/predictions_all.txt',header=None, sep=',')
+    dfpred_test = pd.read_table(foldername+str(i+1)+'/predictions_test_all.txt',header=None, sep=',')
+    dftrain = pd.read_csv(foldername+str(i+1)+'/label_train_all.txt',header=None,sep=',')
+    dftest = pd.read_csv(foldername+str(i+1)+'/label_test_all.txt',header=None,sep=',')
     '''
     dfpred = pd.read_table('C:/Users/Sudipta/Documents/DL/kronRLSMKStack/GPCR_stack/Folds/5fold/'+1+'/predictions_all.txt',header=None, sep=',')
     dfpred_test = pd.read_table('C:/Users/Sudipta/Documents/DL/kronRLSMKStack/GPCR_stack/Folds/5fold/'+1+'/predictions_test_all.txt',header=None, sep=',')
@@ -65,11 +67,19 @@ for i in range(5):
     #X_test = dfpred_test.as_matrix()
     #X = dfpred.iloc[:,[9,19,49,79,99]].as_matrix()           #for IC
     #X_test = dfpred_test.iloc[:,[9,19,49,79,99]].as_matrix() #for IC
-    X = dfpred.iloc[:,[3,6,16,17,19,46,47,49,66,67,69,76,77,79,83,86,87,89,93,96,97,99]].as_matrix()           #for GCPR
-    X_test = dfpred_test.iloc[:,[3,6,16,17,19,46,47,49,66,67,69,76,77,79,83,86,87,89,93,96,97,99]].as_matrix() #for GCPR
+    #X = dfpred.iloc[:,[3,6,16,17,19,46,47,49,66,67,69,76,77,79,83,86,87,89,93,96,97,99]].as_matrix()           #for GCPR
+    #X_test = dfpred_test.iloc[:,[3,6,16,17,19,46,47,49,66,67,69,76,77,79,83,86,87,89,93,96,97,99]].as_matrix() #for GCPR
+    with open('tmpfile','r') as f:
+        a = f.read()
+    ind_list = map(int,a.split())
+    TOP = 10 
+    top_ind = ind_list[-TOP:-1]
+
+    X = dfpred.iloc[:,top_ind].as_matrix()
+    X_test = dfpred_test.iloc[:,top_ind].as_matrix()
+
     y = np.transpose(y1)
     y_test = np.transpose(y1_test)
-    
     
     
     #X_train, X_validation, y_train, y_validation = train_test_split(X, y, test_size=0.33, random_state=42)

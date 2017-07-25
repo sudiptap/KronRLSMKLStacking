@@ -56,20 +56,25 @@ function kronrls_mkstack1( K1, K2, y, train_idx, lambda, num_ones, y_test, test_
 			%disp(size(pred1));
 			x_train_idx=1; x_test_idx=1; x_validation_idx=1;
 			for x=1:stacking_rows
-				if ismember(x,train_idx)%orig(1,x)==1				
+				if ismember(x,train_idx)%orig(1,x)==1
+					%disp('In Train');
 					out(x_train_idx,new_col_idx) = pred1(1,x);	
 					label_train(1,x_train_idx)=orig(1,x);	
 					x_train_idx=x_train_idx+1;									
 				elseif ismember(x,test_idx)
+					%disp('In Test');
 					%ismember(x,test_idx)	
 					out_test(x_test_idx,new_col_idx) = pred1(1,x);
 					label_test(1,x_test_idx)=orig(1,x);	
 					x_test_idx=x_test_idx+1;
-				else
+				elseif ismember(x, validation_idx)
+					%disp('In Validation');
 					%ismember(x,test_idx)	
 				    out_validation(x_validation_idx,new_col_idx) = pred1(1,x);
 					label_validation(1,x_validation_idx)=orig(1,x);	
-					x_validation_idx=x_validation_idx+1;					
+					x_validation_idx=x_validation_idx+1;
+				else
+					disp('ERROR');
 				end 
 			end
 			new_col_idx=new_col_idx+1;
