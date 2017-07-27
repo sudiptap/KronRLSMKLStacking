@@ -2,10 +2,10 @@ function [] = sample()
 clear
 seed = 12345678;
 rand('seed', seed);
-nfolds = 5; nruns=1; n_validation_folds=10
+nfolds = 5; nruns=1; n_validation_folds=50
 
-%dataname = 'nr'; %please use nflods=17 for best result
-dataname = 'gpcr'; %please use nflods=10 for best result
+dataname = 'nr'; %please use nflods=17 for best result
+%dataname = 'gpcr'; %please use nflods=10 for best result
 %dataname = 'ic'; %please use nflods=20 for best result
 %dataname = 'e';
 
@@ -51,16 +51,19 @@ for run=1:1
 		    %training dataset is extracted
 		    %extract the validation dataset now
 		    validation_idx_idx = crossvalind('Kfold', length(train_idx), n_validation_folds);
-		    train_idx_tmp = train_idx(find(validation_idx_idx~=10)); 
-            validation_idx  = train_idx(find(validation_idx_idx==10));
+		    train_idx_tmp = train_idx(find(validation_idx_idx~=n_validation_folds)); 
+            validation_idx  = train_idx(find(validation_idx_idx==n_validation_folds));
 		    train_idx = train_idx_tmp;
 		    y_train = y_train1; y_validation = y_train;
-            y_train1(validation_idx) = 0; %disp(size(train_idx)); disp(size(test_idx));
+            y_train(validation_idx) = 0; %disp(size(train_idx)); disp(size(test_idx));
 		    y_validation(train_idx)=0;
 		    y_test(train_idx)=0; %y_test(test_idx)=1;
 		    y_test(validation_idx)=0;
 		    disp(intersect(train_idx,validation_idx));
 		    disp(intersect(test_idx,validation_idx));
+			disp(intersect(test_idx,train_idx));
+			%disp((union(union(train_idx, test_idx), validation_idx)));
+			%disp(length(y(:)));
 		    %validation_file_name = strcat('example_validation_',int2str(fold),'.txt');		
 		    %dlmwrite(validation_file_name,reshape(y_validation, [number_of_rows number_of_cols]), '\t')
 		    
