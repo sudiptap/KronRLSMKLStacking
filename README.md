@@ -1,5 +1,5 @@
-## Kronrls-stacking
-Matlab and python implementation of the Kronecker Regularized Least Squares with multiple kernel stacking algorithm.
+## Kronrls-stacking : Ensemble Learning Algorithm for Drug-Target Interaction Prediction
+Predicting drug-target interaction through simulation is an immensely important problem. It has huge impact in drug discovery in pharmaceutical industry. FDA reports that it takes close to five billion dollars to introduce a new drug to the market. A slight improvement in accuracy of prediction in the domain may save thousands if not millions of dollars in investment, there by lowering down the cost of production and making drugs cheaper to its consumers. We proposed a new algorithm to combine multiple heterogeneous information for identification of new interactions between drugs and targets. Empirical results on four data sets show that the proposed strategy has comparable or better prediction accuracy than contemporary methods.
 
 ## Pre-requisite
 Matlab, Python, Sklearn, Numpy
